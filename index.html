@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>FoF Save Editor</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+      <h1 class="title">FoF Save Editor</h1>
+      <h2 class="title">By The Waal</h2>
+      <span class="title">To begin, input a file!</span> <div></div>
+      <span class="title">go to "%userprofile%\appdata\locallow\GrandGamesStudio\FameOrFolly" and choose the file named "run_save_P1_save1.json"</span><div></div>
+      <span class="title">After exporting, replace the file!</span>
+      <div>:D</div><div></div>
+      <script src="script.js"></script>
+      <input type="file" id="InSave" accept=".json" hidden>
+      <button class="SimpleButton" id="InSaveButton">Input Save</button>
+      <button class="SimpleButton" id="OutSave">Export Save</button>
+      <div>div</div><div>div</div><div>div</div>
+
+      <Span class="title">GameState: </Span><select id="GameState">
+        <option value="NewGameStart">NewGameStart</option>
+        <option value="OnCardPlayed">OnCardPlayed</option>
+        <option value="DuringPlay">DuringPlay</option>
+        <option value="DuringRecruitment">DuringRecruitment</option>
+        <option value="AfterWinning">AfterWinning</option>
+        <option value="WhileShopping">WhileShopping</option>
+      </select>
+
+      <div>div</div>
+
+      <Span class="title">Season: </Span><input type="number" id="currentSeason" value=1 step=1><div></div>
+      <Span class="title">Round: </Span><input type="number" id="currentRound" value=1 step=1 min=1 max=4><div></div>
+      <Span class="title">Silver: </Span><input type="number" id="currentSilver" value=4 min=0><div></div>
+      <Span class="title">Copper: </Span><input type="number" id="currentCopper" value=0 min=0><div></div>
+
+      <div>div</div>
+
+      
+
+  </body>
+</html>
+
+<script>
+  let save = "";
+  let HasInputSave = false;
+  let SaveData = {doTutorial: false,
+    deckId: "CARAVAN_OF_COIN",
+    currentCopper: 0,
+    currentSilver: 4,
+    currentRound:1,
+    currentSeason:1,
+    maxNumberOfSeasonResetChoices: 14,
+    saveGameLocation: "Shop",//NewGameStart,OnCardPlayed,DuringPlay,DuringRecruitment,AfterWinning,WhilePackOpen,WhileShopping
+    currentPlayState:"Playing",//Playing,WonPhase,Shopping
+    shopPriceDiscount: 1,
+    chosenDifficultyId: 0,//is equal to difficulty-1
+    startingMaxTension: 7,
+    interestCap: 20,
+    interestRate: 1,
+    interestConversion: 5,
+    copperToSilverConversionRate: 20,
+    copperConversionMultiplier:1,
+    round1SilverReward:2,
+    round2SilverReward:3,
+    round3SilverReward:4,
+    round4SilverReward:5,
+    runSeedString:"cha8seed",
+    currentPlay:0,//Marks how many hands have been played in the current round
+    //Banner stuff :DD
+    //ownedEnhancements:{
+      //{"enhancementId":"DRAGON_EGG",
+      // "inventoryInstanceId":"56a950a31b724c2192a7c65a17e6776f",
+      // "slotIndex":0,
+      // "accumulatedBonusScore":0,"accumulatedBonusMultAdditive":0.0,"accumulatedBonusMultMultiplicative":0.0,
+      // "accumulatedBonusCopper":0,"accumulatedBonusBustLimitIncrease":0,"abilityAccumulationTracking":0,
+      // "temporaryBustLimitIncreaseFromOnPlayCard":0,"numOfDaysLeftForCertainAbilities":0,
+      // "bannerlessCreedDebuffPerformancesRemaining":0,"pirateBayBannersToSellRemaining":0,
+      // "hasBannerlessCreedDebuffPerformancesRemaining":true,"hasPirateBayBannersToSellRemaining":true,
+      // "numTimesOnPlayedCardAbilityTriggeredThisPlay":0,"onPlayedCardConditionBaselineCount":0,
+      // "silverSellValueModifier":0,"decayingScore":0,"decayingMultAdditive":0.0,
+      // "silverAccumulatedBonus":0,"hasUsedOncePerRoundAbility":false,"hasUsedOncePerPlayAbility":false,
+      // "hasSpentSilverWhileOwningThis":false,"randomChosenCategoryId":-1,"randomConsumableRewardRollCount":0,
+      // "multBannerBonus":0.0,"playedConditionCount":0,"chanceValue":0,"chanceBase":0,"endOfRoundSilverBonus":0.0,
+      // "totalSellValueOfAllOtherBanners":0,"treeOfCrystalBlightBonus":0.0,"devouringCrestBonus":0.0,
+      // "bannerlessCreedEmptySlotCalculatedBonus":0.0,"showOfWealthCalculatedBonus":0.0,"patronsFavorCalculatedBonus":0.0
+      // ,"grandEnsambleCalculatedBonus":0.0,"masterOfPropsCalculatedMult":0.0,"tensionLimitAboveStartMultTimes":0.0}
+    //},
+  };
+
+  function FindValueInSave(Val) {
+    if (save.indexOf(Val)) {
+      let pos = save.indexOf(Val)+2+Val.length;
+      let end = save.indexOf(",",pos);
+      let final = save.substring(pos,end);
+      console.log(pos,end,final)
+      if (final.indexOf('"')==0) {return final.substring(1,final.length-1);};
+      if (Number(final)) {return Number(final)};
+      return final;
+    };
+    console.log("?")
+    return null;
+  };
+  function ReplaceValueInSave(Val,New) {
+    if (save.indexOf(Val)) {
+      let pos = save.indexOf(Val)+2+Val.length;
+      let end = save.indexOf(",",pos);
+      console.log(save[pos]=='"')
+      if (save[pos]=='"') {save = save.substring(0, pos+1) + New + save.substring(end-1);}
+      else {save = save.substring(0, pos) + New + save.substring(end);};
+    };
+  };
+
+  const InputSaveButton = document.getElementById("InSaveButton");
+  const InputSave = document.getElementById("InSave");
+  const OutputSave = document.getElementById("OutSave");
+
+  InputSaveButton.addEventListener("click", function(event) {
+    InputSave.click();
+  });
+  InputSave.addEventListener('change', () => {
+    if (InputSave.files.length > 0) {
+      HasInputSave = true;
+      ProcessSave(InputSave.files[0]);
+    }
+  });
+  OutputSave.addEventListener("click", function(event) {
+    if (save.length == 0) {return};
+
+    for (const name in SaveData) {
+      let val = FindValueInSave(name);
+      if (val) {
+        ReplaceValueInSave(name,SaveData[name])
+      };
+    };
+
+    const blob = new Blob([save], { type: "/json" });
+  
+    const blobUrl = URL.createObjectURL(blob);
+  
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = blobUrl;
+    a.download = "run_save_P1_save1.json";
+  
+    document.body.appendChild(a);
+    a.click();
+
+    document.body.removeChild(a);
+    URL.revokeObjectURL(blobUrl);
+  });
+
+  const StateInput = document.getElementById("GameState");
+  StateInput.addEventListener('change', () => {
+    SaveData.saveGameLocation = StateInput.value;
+    if (StateInput.value == "Shopping") {SaveData.currentPlayState = "Shopping"}
+    else if (StateInput.value == "AfterWinning") {SaveData.currentPlayState = "WonPhase"}
+    else {SaveData.currentPlayState = "Playing"};
+  });
+
+  const SeasonInput = document.getElementById("currentSeason");
+  SeasonInput.addEventListener('change', () => {SaveData.currentSeason = SeasonInput.value;});
+
+  const RoundInput = document.getElementById("currentRound");
+  RoundInput.addEventListener('change', () => {SaveData.currentRound = RoundInput.value;});
+
+  const SilverInput = document.getElementById("currentSilver");
+  SilverInput.addEventListener('change', () => {SaveData.currentSilver = SilverInput.value;});
+
+  const CopperInput = document.getElementById("currentCopper");
+  CopperInput.addEventListener('change', () => {SaveData.currentCopper = CopperInput.value;});
+
+  function ProcessSave(NewSave) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      save = reader.result;
+    };
+    reader.onerror = () => {
+      console.log("Error reading the file. Please try again.", "error");
+    };
+    reader.readAsText(NewSave);
+    reader.onloadend = () => {
+      for (const name in SaveData) {
+        let val = FindValueInSave(name);
+        if (val) {
+          SaveData[name]=val;
+          console.log(val);
+        };
+      };
+      StateInput.value = SaveData.saveGameLocation;
+      SeasonInput.value = SaveData.currentSeason;
+      RoundInput.value = SaveData.currentRound;
+      SilverInput.value = SaveData.currentSilver;
+      CopperInput.value = SaveData.currentCopper;
+    };
+  };
+</script>

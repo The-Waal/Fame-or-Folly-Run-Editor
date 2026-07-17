@@ -1,0 +1,14 @@
+body{
+  padding: 25px;
+  background-color: black;
+}
+.title {
+	color:blueviolet;
+}
+.SimpleButton {
+	color:rgb(175, 47, 214);
+  border-color:rebeccapurple;
+  background-color: rgb(56, 0, 83);
+  height:48px;
+  width:128px;
+}
