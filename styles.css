@@ -3,7 +3,11 @@ body{
   background-color: black;
 }
 .title {
-	color:blueviolet;
+	color:rgb(145, 42, 241);
+}
+.text {
+	color:rgb(146, 39, 245);
+  font-size:x-large;
 }
 .SimpleButton {
 	color:rgb(175, 47, 214);
