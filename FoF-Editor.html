@@ -17,7 +17,7 @@
       <button class="SimpleButton" id="OutSave">Export Save</button>
       <div>div</div><div>div</div><div>div</div>
 
-      <Span class="title">GameState: </Span><select id="GameState">
+      <Span class="text">GameState: </Span><select id="GameState">
         <option value="NewGameStart">NewGameStart</option>
         <option value="OnCardPlayed">OnCardPlayed</option>
         <option value="DuringPlay">DuringPlay</option>
@@ -28,10 +28,16 @@
 
       <div>div</div>
 
-      <Span class="title">Season: </Span><input type="number" id="currentSeason" value=1 step=1><div></div>
-      <Span class="title">Round: </Span><input type="number" id="currentRound" value=1 step=1 min=1 max=4><div></div>
-      <Span class="title">Silver: </Span><input type="number" id="currentSilver" value=4 min=0><div></div>
-      <Span class="title">Copper: </Span><input type="number" id="currentCopper" value=0 min=0><div></div>
+      <Span class="text">Season: </Span><input type="number" id="currentSeason" value=1><div></div>
+      <Span class="text">Round: </Span><input type="number" id="currentRound" value=1 min=1 max=4><div></div>
+      <Span class="text">Silver: </Span><input type="number" id="currentSilver" value=4 min=0><div></div>
+      <Span class="text">Copper: </Span><input type="number" id="currentCopper" value=0 min=0><div>div</div>
+      <Span class="text">Max Tension: </Span><input type="number" id="maxTension" value=7><div></div>
+      <Span class="text">Shop Discount: </Span><input type="number" id="shopDiscount" value=0 step=0.1 min=0 max=1><div></div>
+      <Span class="text">Earn no interest: </Span><input type="checkbox" id="earnNoInterest" value="false"><div></div>
+      <Span class="text">Interest Cap: </Span><input type="number" id="interestCap" value=5><div></div>
+      <Span class="text">interest Conversion Rate: </Span><input type="number" id="interestConversion" value=5 min=1><div></div>
+      <Span class="text">Interest Rate Multiplier: </Span><input type="number" id="interestRate" value=1><div></div>
 
       <div>div</div>
 
@@ -52,9 +58,11 @@
     maxNumberOfSeasonResetChoices: 14,
     saveGameLocation: "Shop",//NewGameStart,OnCardPlayed,DuringPlay,DuringRecruitment,AfterWinning,WhilePackOpen,WhileShopping
     currentPlayState:"Playing",//Playing,WonPhase,Shopping
-    shopPriceDiscount: 1,
+    shopPriceDiscount: 0,
     chosenDifficultyId: 0,//is equal to difficulty-1
-    startingMaxTension: 7,
+    currentDifficulty:"Easy",//Easy,Medium,Hard
+    maxRisk: 7,
+    earnNoInterest: false,
     interestCap: 20,
     interestRate: 1,
     interestConversion: 5,
@@ -67,6 +75,8 @@
     runSeedString:"cha8seed",
     currentPlay:0,//Marks how many hands have been played in the current round
     //Banner stuff :DD
+    maxEnhancementSlots:4,
+    //numOfConsumableSlots:2,//CANT BE CHANGED
     //ownedEnhancements:{
       //{"enhancementId":"DRAGON_EGG",
       // "inventoryInstanceId":"56a950a31b724c2192a7c65a17e6776f",
@@ -169,6 +179,24 @@
   const CopperInput = document.getElementById("currentCopper");
   CopperInput.addEventListener('change', () => {SaveData.currentCopper = CopperInput.value;});
 
+  const TensionInput = document.getElementById("maxTension");
+  TensionInput.addEventListener('change', () => {SaveData.maxRisk = TensionInput.value;});
+
+  const DiscountInput = document.getElementById("shopDiscount");
+  DiscountInput.addEventListener('change', () => {SaveData.shopPriceDiscount = DiscountInput.value;});
+
+  const interestRInput = document.getElementById("interestRate");
+  interestRInput.addEventListener('change', () => {SaveData.interestRate = interestRInput.value;});
+
+  const interestCInput = document.getElementById("interestConversion");
+  interestCInput.addEventListener('change', () => {SaveData.interestConversion = interestCInput.value;});
+
+  const interestCapInput = document.getElementById("interestCap");
+  interestCapInput.addEventListener('change', () => {SaveData.interestCap = interestCapInput.value;});
+
+  const canInterestInput = document.getElementById("earnNoInterest");
+  canInterestInput.addEventListener('change', () => {SaveData.earnNoInterest = canInterestInput.value;});
+
   function ProcessSave(NewSave) {
     const reader = new FileReader();
     reader.onload = () => {
@@ -191,6 +219,12 @@
       RoundInput.value = SaveData.currentRound;
       SilverInput.value = SaveData.currentSilver;
       CopperInput.value = SaveData.currentCopper;
+      TensionInput.value = SaveData.maxRisk;
+      DiscountInput.value = SaveData.shopPriceDiscount;
+      interestRInput.value = SaveData.interestRate;
+      interestCInput.value = SaveData.interestConversion;
+      interestCapInput.value = SaveData.interestCap;
+      if ((canInterestInput==SaveData.earnNoInterest)==false) {canInterestInput.click();};
     };
   };
 </script>
